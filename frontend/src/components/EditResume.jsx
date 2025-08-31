@@ -47,9 +47,76 @@ const useResizeObserver = () => {
   return { ...size, ref };
 };
 
-// Reactive Resume Assistant
+// --- Resume Assistant --- //
 const ResumeAssistant = ({ currentPage, resumeData }) => {
-  // ... keep your ResumeAssistant code unchanged
+  const tips = {
+    "profile-info": [
+      "Use your full name as it appears on official documents.",
+      "A clear designation (e.g., 'Software Engineer') sets the tone.",
+      "Write a 2–3 sentence summary highlighting strengths and goals.",
+    ],
+    "contact-info": [
+      "Double-check your email and phone for accuracy.",
+      "Add LinkedIn and GitHub if relevant to your career path.",
+      "A personal website is a big plus for creative/tech roles.",
+    ],
+    "work-experience": [
+      "Focus on achievements, not just responsibilities.",
+      "Use action verbs like 'Led', 'Built', 'Improved'.",
+      "Quantify impact (e.g., 'Improved efficiency by 20%').",
+    ],
+    "education-info": [
+      "List your highest degree first.",
+      "Include relevant coursework if you’re early in your career.",
+      "Don’t forget honors, scholarships, or academic projects.",
+    ],
+    "skills": [
+      "Prioritize skills relevant to your target job.",
+      "Mix both technical and soft skills.",
+      "Rate your skill levels honestly.",
+    ],
+    "projects": [
+      "Showcase projects that prove your skills in action.",
+      "Link GitHub or Live Demo if possible.",
+      "Briefly describe tools, tech stack, and impact.",
+    ],
+    "certifications": [
+      "Add only relevant and recognized certifications.",
+      "Include the issuing authority and year.",
+    ],
+    "additionalInfo": [
+      "Languages can help you stand out globally.",
+      "Add hobbies that reflect creativity, teamwork, or leadership.",
+      "Keep it short and authentic.",
+    ],
+  };
+
+  const suggestions = tips[currentPage] || [];
+
+  return (
+    <div className="flex flex-col h-full">
+      <h2 className="text-lg font-semibold mb-3">💡 Resume Assistant</h2>
+      <p className="text-gray-600 text-sm mb-4">
+        Here are some quick tips to improve this section:
+      </p>
+      <ul className="space-y-3 text-sm">
+        {suggestions.map((tip, i) => (
+          <li
+            key={i}
+            className="flex items-start gap-2 p-2 rounded-lg bg-violet-50 border border-violet-100"
+          >
+            <span className="text-violet-600 mt-0.5">✔</span>
+            <span>{tip}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* Motivational footer */}
+      <div className="mt-auto pt-4 text-xs text-gray-500 border-t">
+        ✨ Keep going — every detail makes your resume stronger!
+      </div>
+    </div>
+  );
 };
 
 const EditResume = () => {
