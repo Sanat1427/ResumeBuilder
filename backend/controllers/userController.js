@@ -1,5 +1,5 @@
 import User from '../models/userModel.js'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'   // ✅ switched from bcrypt to bcryptjs
 import jwt from 'jsonwebtoken'
 
 const generateToken = (userId) => {
@@ -16,13 +16,17 @@ export const registerUser = async (req, res) => {
         if (password.length < 8) {
             return res.status(400).json({ message: "Password must be atleast of 8 characters" })
         }
+
+        // ✅ bcryptjs handles salt internally, but still works with genSalt
         const salt = await bcrypt.genSalt(10);
         const hashedpassword = await bcrypt.hash(password, salt)
+
         const user = await User.create({
             name,
             email,
             password: hashedpassword,
         })
+
         res.status(201).json({
             _id: user._id,
             name: user.name,
@@ -45,10 +49,12 @@ export const loginUser = async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: "Invalid email or password" })
         }
+
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
             return res.status(401).json({ message: "Invalid email or password" })
         }
+
         res.status(201).json({
             _id: user._id,
             name: user.name,
