@@ -17,8 +17,8 @@ const PORT = process.env.PORT || 4000;
 
 // ✅ Allowed origins (local + deployed frontend)
 const allowedOrigins = [
-  "http://localhost:5173",                     // local dev
-  "https://resume-builder-nine-cyan.vercel.app" // deployed frontend
+  "http://localhost:5173",                               // local dev
+  "https://resumebuilder-frontend-6gjz.onrender.com"     // new deployed frontend
 ];
 
 // ✅ CORS middleware
@@ -43,15 +43,13 @@ app.use(
   "/uploads",
   express.static(path.join(__dirname, "uploads"), {
     setHeaders: (res, _path) => {
-      // Allow both local + deployed frontend to fetch images
-      if (allowedOrigins.includes("http://localhost:5173")) {
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-      }
-      res.setHeader(
-        "Access-Control-Allow-Origin",
-        "https://resume-builder-nine-cyan.vercel.app"
-      );
-      res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+      // Allow both local and deployed frontend to fetch images
+      res.setHeader("Access-Control-Allow-Methods","https://resumebuilder-frontend-6gjz.onrender.com" );
+
+      // Dynamically allow origins
+      allowedOrigins.forEach(origin => {
+        res.setHeader("Access-Control-Allow-Origin", origin);
+      });
     },
   })
 );
