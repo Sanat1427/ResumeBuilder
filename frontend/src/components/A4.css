@@ -1,0 +1,49 @@
+/* Force A4 size exactly when printing from the browser */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 210mm;       /* Fix A4 width */
+    min-height: 297mm;  /* Allow growth beyond one page */
+  }
+
+  /* Avoid breaking inside headings or custom section titles */
+  .a4-wrapper h1,
+  .a4-wrapper h2,
+  .a4-wrapper h3,
+  .a4-wrapper h4,
+  .a4-wrapper .section-title {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Prevent entire resume sections from splitting */
+  .a4-wrapper .resume-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .section-title,
+  .resume-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    page-break-after: avoid;
+  }
+}
+
+/* Ensure wrapper is sized correctly for A4 but allows growing if content is more */
+.a4-wrapper {
+  width: 210mm;
+  min-height: 297mm;
+  background: white;
+  margin: auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
