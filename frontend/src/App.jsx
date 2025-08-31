@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard'
 import EditResume from './components/EditResume'
 import { Toaster } from 'react-hot-toast'
 
+
+
 const App = () => {
   return (
     <UserProvider>

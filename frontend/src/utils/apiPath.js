@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:4000'
+export const BASE_URL = 'https://resumebuilder-backned.onrender.com'
 // ROUTES USED FOR FRONTEND
 export const API_PATHS = {
     AUTH: {
@@ -17,4 +17,4 @@ export const API_PATHS = {
     IMAGE: {
         UPLOAD_IMAGE: '/api/auth/upload-image'
     }
-}
+};
