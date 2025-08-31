@@ -7,7 +7,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { API_PATHS } from '../utils/apiPath';
 import { ResumeSummaryCard } from '../components/Cards';
 import toast from 'react-hot-toast';
-import moment from 'moment';
+import dayjs from 'dayjs'; // ✅ consistent date formatting
 import Modal from '../components/Modal';
 import CreateResumeForm from '../components/CreateResumeForm';
 
@@ -127,6 +127,7 @@ const Dashboard = () => {
         {/* GRID VIEW */}
         {!loading && allResumes.length > 0 && (
           <div className={styles.grid}>
+            {/* Create New Resume Card */}
             <div
               className={`${styles.newResumeCard} hover:shadow-lg transition-shadow cursor-pointer`}
               onClick={() => setOpenCreateModal(true)}
@@ -138,18 +139,16 @@ const Dashboard = () => {
               <p className={styles.newResumeText}>Start building your career</p>
             </div>
 
+            {/* Resumes List */}
             {allResumes.map((resume) => (
               <ResumeSummaryCard
                 key={resume._id}
-                imgUrl={resume.thumbnailLink}
                 title={resume.title}
-                createdAt={resume.createdAt}
-                updatedAt={resume.updatedAt}
+                createdAt={dayjs(resume.createdAt).toISOString()}
+                updatedAt={dayjs(resume.updatedAt).toISOString()}
                 onSelect={() => navigate(`/resume/${resume._id}`)}
                 onDelete={() => handleDeleteClick(resume._id)}
                 completion={resume.completion || 0}
-                isPremium={resume.isPremium}
-                isNew={moment().diff(moment(resume.createdAt), 'days') < 7}
               />
             ))}
           </div>

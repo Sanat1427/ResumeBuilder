@@ -2,7 +2,8 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import { cardStyles } from "../assets/dummystyle";
-import { Clock, Edit, Trash2, Award, TrendingUp, Zap, Check } from "lucide-react"; // ✅ added Check
+import { Clock, Edit, Trash2, Award, TrendingUp, Zap, Check } from "lucide-react";
+import dayjs from "dayjs"; // ✅ use for dates
 
 // ✅ Profile info card
 export const ProfileInfoCard = () => {
@@ -34,7 +35,7 @@ export const ProfileInfoCard = () => {
   );
 };
 
-// ✅ ResumeSummaryCard Component
+// ✅ ResumeSummaryCard Component (refactored with dayjs + mobile actions)
 export const ResumeSummaryCard = ({
   title = "Untitled Resume",
   createdAt = null,
@@ -46,19 +47,10 @@ export const ResumeSummaryCard = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const formattedCreatedDate = createdAt
-    ? new Date(createdAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
+    ? dayjs(createdAt).format("DD/MM/YYYY")
     : "—";
-
   const formattedUpdatedDate = updatedAt
-    ? new Date(updatedAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
+    ? dayjs(updatedAt).format("DD/MM/YYYY")
     : "—";
 
   const getCompletionColor = () => {
@@ -136,6 +128,7 @@ export const ResumeSummaryCard = ({
           </div>
         </div>
 
+        {/* Hover actions (desktop) */}
         {isHovered && (
           <div className={cardStyles.actionOverlay}>
             <div className={cardStyles.actionButtonsContainer}>
@@ -168,8 +161,8 @@ export const ResumeSummaryCard = ({
             <h5 className={cardStyles.title}>{title}</h5>
             <div className={cardStyles.dateInfo}>
               <Clock size={12} />
-              <span>Created At: {formattedCreatedDate}</span>
-              <span className="ml-2">Updated At: {formattedUpdatedDate}</span>
+              <span>Created: {formattedCreatedDate}</span>
+              <span className="ml-2">Updated: {formattedUpdatedDate}</span>
             </div>
           </div>
         </div>
@@ -199,12 +192,22 @@ export const ResumeSummaryCard = ({
             {completion}% Complete
           </span>
         </div>
+
+        {/* Mobile-friendly actions */}
+        <div className="flex md:hidden mt-3 gap-3">
+          <button className={cardStyles.editButton} onClick={onSelect}>
+            <Edit size={16} />
+          </button>
+          <button className={cardStyles.deleteButton} onClick={handleDeleteClick}>
+            <Trash2 size={16} />
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-// ✅ TemplateCard Component (fixed)
+// ✅ TemplateCard Component (bug fixed)
 export const TemplateCard = ({ thumbnailImg, isSelected, onSelect }) => {
   return (
     <div
@@ -228,23 +231,17 @@ export const TemplateCard = ({ thumbnailImg, isSelected, onSelect }) => {
               </div>
             </div>
           )}
-          {/*Hover effect */}
-          <div className=" absolute inset-0 bg-gradient-to-t from-violet-100/30 to-transparent opacity-0
-          group - hover:opacity-100 transition-opacity duration-300">
-            </div>
+          {/* Hover effect FIXED */}
+          <div className="absolute inset-0 bg-gradient-to-t from-violet-100/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
       ) : (
-        <div className="w-full h-[200px] flex items-center flex-col justify-center bg-gradient-to-br from-violet-50
-        via-violet-600 to-fuchsia-50">
-          <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl flex
-          items-center justify-center mb-3">
+        <div className="w-full h-[200px] flex items-center flex-col justify-center bg-gradient-to-br from-violet-50 via-violet-600 to-fuchsia-50">
+          <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl flex items-center justify-center mb-3">
             <Edit className="text-white" size={20} />
           </div>
-          <span className="text-gray-700 font-bold">
-            No Preview
-          </span>
-          </div>
+          <span className="text-gray-700 font-bold">No Preview</span>
+        </div>
       )}
     </div>
-  )
-}
+  );
+};
