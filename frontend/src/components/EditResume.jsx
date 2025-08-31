@@ -1,217 +1,425 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DashboardLayout from "./DashboardLayout";
 import RenderResume from "../components/RenderResume";
 import Modal from "../components/Modal";
 import ThemeSelector from "../components/ThemeSelector";
 import {
+  AlertCircle,
   ArrowLeft,
   Download,
   Palette,
   Trash2,
+  Loader2,
   Save,
   Check,
 } from "lucide-react";
+import axiosInstance from "../utils/axiosInstance";
+import { API_PATHS } from "../utils/apiPath";
+import toast from "react-hot-toast";
+import StepProgress from "../components/StepProgress";
+import {
+  ProfileInfoForm,
+  ContactInfoForm,
+  WorkExperienceForm,
+  EducationDetailsForm,
+  SkillsInfoForm,
+  ProjectDetailForm,
+  CertificationInfoForm,
+  AdditionalInfoForm,
+} from "../components/Forms";
+import { TitleInput } from "./Input";
+import { buttonStyles, containerStyles } from "../assets/dummystyle";
+import html2pdf from "html2pdf.js";
 
-// ---------------- Resume Assistant ----------------
-const ResumeAssistant = ({ currentPage, resumeData }) => {
-  // Tips depending on current form section
-  const tips = {
-    "profile-info": [
-      "Add your full name and professional title.",
-      "Write a short 2–3 line summary that highlights your strengths.",
-    ],
-    "contact-info": [
-      "Use a professional email address.",
-      "Include LinkedIn, GitHub, or personal website if available.",
-    ],
-    "work-experience": [
-      "List jobs in reverse chronological order.",
-      "Use strong action verbs (e.g., Led, Developed, Designed).",
-    ],
-    "education-info": [
-      "Include degree, institution, and year of completion.",
-      "Only mention GPA or coursework if it adds value.",
-    ],
-    "skills": [
-      "Focus on 6–10 key skills that match the job description.",
-      "Group related skills together for readability.",
-    ],
-    "projects": [
-      "Highlight 2–3 impactful projects.",
-      "Include links to GitHub or live demo if possible.",
-    ],
-    "certifications": [
-      "Add recent and relevant certifications only.",
-    ],
-    "additionalInfo": [
-      "Mention languages, interests, or achievements.",
-      "Keep it short and professional.",
-    ],
-  };
-
-  // Smart suggestions based on resumeData
-  const suggestions = [];
-  if (currentPage === "profile-info") {
-    if (!resumeData.profileInfo.fullName) {
-      suggestions.push("You haven’t added your full name yet.");
-    }
-    if (!resumeData.profileInfo.designation) {
-      suggestions.push("Consider adding your job title (e.g., Software Engineer).");
-    }
-    if (!resumeData.profileInfo.summary || resumeData.profileInfo.summary.length < 30) {
-      suggestions.push("Your summary looks short — add more details about your strengths.");
-    }
-  }
-
-  if (currentPage === "contact-info") {
-    if (!resumeData.contactInfo.linkedin) {
-      suggestions.push("Adding a LinkedIn link makes your resume stronger.");
-    }
-    if (!resumeData.contactInfo.email.includes("@")) {
-      suggestions.push("Please add a valid professional email address.");
-    }
-  }
-
-  if (currentPage === "skills" && resumeData.skills.length < 3) {
-    suggestions.push("Add at least 3–5 strong skills relevant to your field.");
-  }
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Resume Assistant</h2>
-      <p className="text-gray-600 text-sm">
-        You’re editing: <span className="font-medium">{currentPage}</span>
-      </p>
-
-      {/* Tips */}
-      <div className="bg-gray-50 p-3 rounded-lg border space-y-2">
-        <h3 className="text-sm font-semibold">Tips</h3>
-        <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
-          {tips[currentPage]?.map((tip, idx) => (
-            <li key={idx}>{tip}</li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Smart suggestions */}
-      {suggestions.length > 0 && (
-        <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 space-y-2">
-          <h3 className="text-sm font-semibold text-blue-800">Suggestions</h3>
-          <ul className="list-disc pl-5 text-sm text-blue-700 space-y-1">
-            {suggestions.map((s, idx) => (
-              <li key={idx}>{s}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
+// Resize observer hook
+const useResizeObserver = () => {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const ref = useCallback((node) => {
+    if (!node) return;
+    const resizeObserver = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      setSize({ width, height });
+    });
+    resizeObserver.observe(node);
+    return () => resizeObserver.disconnect();
+  }, []);
+  return { ...size, ref };
 };
 
-// ---------------- Main EditResume Component ----------------
+// Reactive Resume Assistant
+const ResumeAssistant = ({ currentPage, resumeData }) => {
+  // ... keep your ResumeAssistant code unchanged
+};
+
 const EditResume = () => {
-  const { id } = useParams();
+  const { resumeId } = useParams();
   const navigate = useNavigate();
 
-  // Example resume data
   const [resumeData, setResumeData] = useState({
+    title: "Professional Resume",
     profileInfo: { fullName: "", designation: "", summary: "" },
-    contactInfo: { email: "", phone: "", linkedin: "" },
-    workExperience: [],
-    educationInfo: [],
-    skills: [],
-    projects: [],
-    certifications: [],
-    additionalInfo: "",
+    contactInfo: { email: "", phone: "", location: "", linkedin: "", github: "", website: "" },
+    workExperience: [{ company: "", role: "", startDate: "", endDate: "", description: "" }],
+    education: [{ degree: "", institution: "", startDate: "", endDate: "" }],
+    skills: [{ name: "", progress: 0 }],
+    projects: [{ title: "", description: "", github: "", liveDemo: "" }],
+    certifications: [{ title: "", issuer: "", year: "" }],
+    languages: [{ name: "", progress: 0 }],
+    interests: [""],
+    template: { theme: "" },
   });
 
+  const { ref: previewContainerRef, width: previewWidth } = useResizeObserver();
   const [currentPage, setCurrentPage] = useState("profile-info");
-  const [showThemeModal, setShowThemeModal] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [openThemeSelector, setOpenThemeSelector] = useState(false);
+  const [openPreviewModal, setOpenPreviewModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSave = useCallback(() => {
-    console.log("Resume saved!", resumeData);
-    alert("Resume saved successfully!");
-  }, [resumeData]);
+  const pages = [
+    "profile-info",
+    "contact-info",
+    "work-experience",
+    "education-info",
+    "skills",
+    "projects",
+    "certifications",
+    "additionalInfo",
+  ];
 
-  const handleDownload = useCallback(() => {
-    console.log("Downloading resume as PDF...");
-    alert("Download triggered!");
-  }, []);
+  const validateAndNext = () => {
+    if (currentPage === "profile-info") {
+      const { fullName, designation, summary } = resumeData.profileInfo;
+      if (!fullName || !designation || !summary) {
+        setErrorMsg("Please complete all profile fields before continuing.");
+        return;
+      }
+    }
+    setErrorMsg("");
+    const currentIndex = pages.indexOf(currentPage);
+    if (currentIndex < pages.length - 1) {
+      const nextIndex = currentIndex + 1;
+      setCurrentPage(pages[nextIndex]);
+      setProgress(Math.round((nextIndex / (pages.length - 1)) * 100));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      setOpenPreviewModal(true);
+    }
+  };
 
-  const handleDelete = useCallback(() => {
-    if (window.confirm("Are you sure you want to delete this resume?")) {
-      console.log("Resume deleted:", id);
+  const goBack = () => {
+    const currentIndex = pages.indexOf(currentPage);
+    if (currentIndex > 0) {
+      const prevIndex = currentIndex - 1;
+      setCurrentPage(pages[prevIndex]);
+      setProgress(Math.round((prevIndex / (pages.length - 1)) * 100));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
       navigate("/dashboard");
     }
-  }, [id, navigate]);
+  };
+
+  // Update handlers
+  const updateSection = (section, key, value) => {
+    setResumeData((prev) => ({ ...prev, [section]: { ...prev[section], [key]: value } }));
+  };
+
+  const updateArrayItem = (section, index, key, value) => {
+    setResumeData((prev) => {
+      const updated = [...prev[section]];
+      if (key === null) updated[index] = value;
+      else updated[index] = { ...updated[index], [key]: value };
+      return { ...prev, [section]: updated };
+    });
+  };
+
+  const addArrayItem = (section, newItem) =>
+    setResumeData((prev) => ({ ...prev, [section]: [...prev[section], newItem] }));
+  const removeArrayItem = (section, index) =>
+    setResumeData((prev) => {
+      const updated = [...prev[section]];
+      updated.splice(index, 1);
+      return { ...prev, [section]: updated };
+    });
+
+  const handleDeleteResume = async () => {
+    try {
+      setIsLoading(true);
+      await axiosInstance.delete(API_PATHS.RESUME.DELETE(resumeId));
+      toast.success("Resume deleted successfully");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete resume");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveAndExit = async () => {
+    try {
+      setIsLoading(true);
+      await axiosInstance.put(API_PATHS.RESUME.UPDATE(resumeId), resumeData);
+      toast.success("Resume saved!");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      toast.error("Save failed!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateTheme = (theme) =>
+    setResumeData((prev) => ({ ...prev, template: { ...prev.template, theme } }));
+
+  // ✅ NEW PDF DOWNLOAD USING html2pdf.js
+  const downloadPDF = () => {
+    if (!resumeData) return;
+    setIsDownloading(true);
+    setDownloadSuccess(false);
+
+    try {
+      const element = document.getElementById("resume-preview"); // target RenderResume container
+      const opt = {
+        margin: 0,
+        filename: `${resumeData.title || "resume"}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 }, // better quality
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
+
+      html2pdf()
+        .set(opt)
+        .from(element)
+        .save()
+        .then(() => {
+          setDownloadSuccess(true);
+          toast.success("PDF downloaded!");
+        });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to download PDF");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  // --- RENDER FORM FUNCTION ---
+  const renderForm = () => {
+    switch (currentPage) {
+      case "profile-info":
+        return (
+          <ProfileInfoForm
+            profileData={resumeData.profileInfo}
+            updateSection={(k, v) => updateSection("profileInfo", k, v)}
+            onNext={validateAndNext}
+          />
+        );
+      case "contact-info":
+        return (
+          <ContactInfoForm
+            contactInfo={resumeData.contactInfo}
+            updateSection={(k, v) => updateSection("contactInfo", k, v)}
+          />
+        );
+      case "work-experience":
+        return (
+          <WorkExperienceForm
+            workExperience={resumeData.workExperience}
+            updateArrayItem={(i, k, v) => updateArrayItem("workExperience", i, k, v)}
+            addArrayItem={(n) => addArrayItem("workExperience", n)}
+            removeArrayItem={(i) => removeArrayItem("workExperience", i)}
+          />
+        );
+      case "education-info":
+        return (
+          <EducationDetailsForm
+            educationInfo={resumeData.education}
+            updateArrayItem={(i, k, v) => updateArrayItem("education", i, k, v)}
+            addArrayItem={(n) => addArrayItem("education", n)}
+            removeArrayItem={(i) => removeArrayItem("education", i)}
+          />
+        );
+      case "skills":
+        return (
+          <SkillsInfoForm
+            skillsInfo={resumeData.skills}
+            updateArrayItem={(i, k, v) => updateArrayItem("skills", i, k, v)}
+            addArrayItem={(n) => addArrayItem("skills", n)}
+            removeArrayItem={(i) => removeArrayItem("skills", i)}
+          />
+        );
+      case "projects":
+        return (
+          <ProjectDetailForm
+            projectInfo={resumeData.projects}
+            updateArrayItem={(i, k, v) => updateArrayItem("projects", i, k, v)}
+            addArrayItem={(n) => addArrayItem("projects", n)}
+            removeArrayItem={(i) => removeArrayItem("projects", i)}
+          />
+        );
+      case "certifications":
+        return (
+          <CertificationInfoForm
+            certifications={resumeData.certifications}
+            updateArrayItem={(i, k, v) => updateArrayItem("certifications", i, k, v)}
+            addArrayItem={(n) => addArrayItem("certifications", n)}
+            removeArrayItem={(i) => removeArrayItem("certifications", i)}
+          />
+        );
+      case "additionalInfo":
+        return (
+          <AdditionalInfoForm
+            languages={resumeData.languages}
+            interests={resumeData.interests}
+            updateArrayItem={(s, i, k, v) => updateArrayItem(s, i, k, v)}
+            addArrayItem={(s, n) => addArrayItem(s, n)}
+            removeArrayItem={(s, i) => removeArrayItem(s, i)}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <DashboardLayout>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-white shadow-sm">
-        <div className="flex items-center gap-2">
-          <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-600 hover:text-gray-800">
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
-          </button>
-          <h1 className="text-lg font-semibold">Edit Resume</h1>
-        </div>
-
-        <div className="flex items-center gap-2">
+      <div className="sticky top-0 z-20 bg-white shadow-sm p-4 flex items-center justify-between">
+        <TitleInput
+          title={resumeData.title}
+          setTitle={(v) => setResumeData((prev) => ({ ...prev, title: v }))}
+        />
+        <div className="flex gap-2">
           <button
-            onClick={handleSave}
-            className="flex items-center px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            onClick={() => setOpenThemeSelector(true)}
+            className="flex items-center gap-1 rounded-xl border px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
           >
-            <Save className="w-4 h-4 mr-1" /> Save
+            <Palette size={16} /> Theme
           </button>
           <button
-            onClick={handleDownload}
-            className="flex items-center px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            onClick={handleDeleteResume}
+            disabled={isLoading}
+            className="flex items-center gap-1 rounded-xl border border-red-400 text-red-600 px-3 py-2 text-sm shadow-sm hover:bg-red-50"
           >
-            <Download className="w-4 h-4 mr-1" /> Download
+            <Trash2 size={16} /> Delete
           </button>
           <button
-            onClick={() => setShowThemeModal(true)}
-            className="flex items-center px-3 py-1 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+            onClick={() => setOpenPreviewModal(true)}
+            className="flex items-center gap-1 rounded-xl bg-blue-600 text-white px-3 py-2 text-sm shadow hover:bg-blue-700"
           >
-            <Palette className="w-4 h-4 mr-1" /> Theme
-          </button>
-          <button
-            onClick={handleDelete}
-            className="flex items-center px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-          >
-            <Trash2 className="w-4 h-4 mr-1" /> Delete
+            <Download size={16} /> Preview
           </button>
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="grid grid-cols-12 gap-4 p-4">
-        {/* Left: Resume Form Placeholder */}
-        <div className="col-span-3 bg-white p-4 rounded-lg shadow">
-          <h2 className="font-semibold mb-2">Form (Editing: {currentPage})</h2>
-          {/* Replace with your actual form */}
-          <p className="text-gray-500 text-sm">Form fields for {currentPage} will go here.</p>
+      {/* Main */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+        {/* Form */}
+        <div className="rounded-2xl border bg-white shadow-md p-6 h-[85vh] flex flex-col lg:col-span-1">
+          <StepProgress progress={progress} />
+          <div className="flex-1 overflow-y-auto pr-2">{renderForm()}</div>
+          {errorMsg && (
+            <div className="mt-3 flex items-center gap-2 text-red-600 text-sm">
+              <AlertCircle size={16} /> {errorMsg}
+            </div>
+          )}
+          <div className="mt-4 flex justify-between">
+            <button
+              onClick={goBack}
+              disabled={isLoading}
+              className="flex items-center gap-2 rounded-xl border px-4 py-2 text-sm hover:bg-gray-50"
+            >
+              <ArrowLeft size={16} /> Back
+            </button>
+            <button
+              onClick={handleSaveAndExit}
+              disabled={isLoading}
+              className="flex items-center gap-2 rounded-xl bg-green-600 text-white px-4 py-2 text-sm shadow hover:bg-green-700"
+            >
+              {isLoading ? <Loader2 className="animate-spin" /> : <Save />}
+              {isLoading ? "Saving..." : "Save & Exit"}
+            </button>
+            <button
+              onClick={validateAndNext}
+              className={buttonStyles.next}
+              disabled={isLoading}
+            >
+              {currentPage === "additionalInfo" ? "Preview & Download" : "Next"}
+            </button>
+          </div>
         </div>
 
-        {/* Center: Resume Preview */}
-        <div className="col-span-6 bg-white p-4 rounded-lg shadow">
-          <RenderResume resumeData={resumeData} />
+        {/* Preview */}
+        <div className="hidden lg:block lg:col-span-1">
+          <div className={containerStyles.previewContainer}>
+            <div className="preview-container relative" ref={previewContainerRef}>
+              <div className={containerStyles.previewInner}>
+                <RenderResume
+                  key={`preview-${resumeData.template.theme}`}
+                  templateId={resumeData.template.theme}
+                  resumeData={resumeData}
+                  containerWidth={previewWidth}
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right: Resume Assistant */}
-        <div className="col-span-3 bg-white p-4 rounded-lg shadow">
+        {/* Resume Assistant */}
+        <div className="rounded-2xl border bg-white shadow-md p-6 h-[85vh] overflow-y-auto lg:col-span-1">
           <ResumeAssistant currentPage={currentPage} resumeData={resumeData} />
         </div>
       </div>
 
       {/* Theme Modal */}
-      {showThemeModal && (
-        <Modal onClose={() => setShowThemeModal(false)}>
-          <ThemeSelector />
-        </Modal>
-      )}
+      <Modal
+        isOpen={openThemeSelector}
+        onClose={() => setOpenThemeSelector(false)}
+        title="Select Theme"
+      >
+        <ThemeSelector
+          selectedTheme={resumeData.template.theme}
+          setSelectedTheme={updateTheme}
+          resumeData={resumeData}
+          onClose={() => setOpenThemeSelector(false)}
+        />
+      </Modal>
+
+      {/* Preview & Download Modal */}
+      <Modal
+        isOpen={openPreviewModal}
+        onClose={() => setOpenPreviewModal(false)}
+        title={resumeData.title}
+        showActionBtn
+        actionBtnText={
+          isDownloading ? "Generating..." : downloadSuccess ? "Downloaded!" : "Download PDF"
+        }
+        actionBtnIcon={
+          isDownloading ? (
+            <Loader2 className="animate-spin" />
+          ) : downloadSuccess ? (
+            <Check />
+          ) : (
+            <Download />
+          )
+        }
+        onActionClick={downloadPDF}
+      >
+        <div id="resume-preview">
+          <RenderResume
+            key={`pdf-${resumeData.template.theme}`}
+            templateId={resumeData.template.theme}
+            resumeData={resumeData}
+            containerWidth={null}
+          />
+        </div>
+      </Modal>
     </DashboardLayout>
   );
 };
