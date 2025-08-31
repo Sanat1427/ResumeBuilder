@@ -1,4 +1,4 @@
-import { compareSync } from "bcrypt";
+
 import mongoose from "mongoose";
 const ResumeSchema = new mongoose.Schema({
     userId:{
