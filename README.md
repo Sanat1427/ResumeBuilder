@@ -79,7 +79,3 @@ A full-stack **MERN (MongoDB, Express, React, Node.js)** application that allows
 * 📱 Native mobile app (React Native).
 
 
-
----
-
-Would you like me to also create a **badges section** (GitHub stars, forks, issues, license, etc.) so your README looks even more professional?
