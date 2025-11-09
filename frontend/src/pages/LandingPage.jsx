@@ -1,260 +1,276 @@
-import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowRight, LayoutTemplate, Menu, X, Zap, Download } from 'lucide-react';
-import { UserContext } from '../context/UserContext';
-import { ProfileInfoCard } from '../components/Cards';
-import Modal from '../components/Modal';
-import Login from '../components/Login';
-import Signup from '../components/Signup';
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  LayoutTemplate,
+  Menu,
+  X,
+  Zap,
+  Download,
+  Sparkles,
+  LayoutDashboard,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { UserContext } from "../context/UserContext";
+import { ProfileInfoCard } from "../components/Cards";
+import Modal from "../components/Modal";
+import Login from "../components/Login";
+import Signup from "../components/Signup";
+import resumePreview from "../assets/resume-preview.png";
 
 const LandingPage = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuopen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState('login');
+  const [currentPage, setCurrentPage] = useState("login");
 
   const handleCTA = () => {
     if (!user) setOpenAuthModal(true);
-    else navigate('/dashboard');
+    else navigate("/dashboard");
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white text-gray-900">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-indigo-950 to-blue-900 text-white overflow-hidden relative">
+      {/* Glowing Background Elements */}
+      <div className="absolute top-[-200px] right-[-100px] w-[400px] h-[400px] bg-cyan-400/30 blur-[160px] rounded-full"></div>
+      <div className="absolute bottom-[-150px] left-[-150px] w-[400px] h-[400px] bg-indigo-500/40 blur-[200px] rounded-full"></div>
 
       {/* HEADER */}
-      <header className="w-full flex justify-between items-center px-6 py-4 shadow-sm sticky top-0 bg-white z-50">
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <LayoutTemplate className="w-8 h-8 text-violet-600" />
-          <span className="text-xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-            ResumeXpert
+      <header className="w-full flex justify-between items-center px-6 py-4 bg-white/10 backdrop-blur-lg border-b border-white/20 sticky top-0 z-50">
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => navigate("/")}
+        >
+          <LayoutTemplate className="w-8 h-8 text-cyan-400" />
+          <span className="text-xl font-bold tracking-wide bg-gradient-to-r from-cyan-300 to-indigo-400 bg-clip-text text-transparent">
+            ResumeRocket
           </span>
         </div>
 
-        {/* MOBILE MENU BUTTON */}
+        {/* MOBILE MENU */}
         <button
-          className="md:hidden"
-          onClick={() => setMobileMenuopen(!mobileMenuOpen)}
+          className="md:hidden text-white"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? (
-            <X size={28} className="text-gray-800" />
-          ) : (
-            <Menu size={28} className="text-gray-800" />
-          )}
+          {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
 
-        {/* DESKTOP NAV */}
+        {/* DESKTOP CTA */}
         <div className="hidden md:flex items-center">
           {user ? (
             <ProfileInfoCard />
           ) : (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleCTA}
-              className="relative px-6 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-medium rounded-full shadow-md hover:shadow-lg transition transform hover:scale-105"
+              className="px-6 py-2 bg-gradient-to-r from-cyan-400 to-indigo-400 text-gray-900 font-semibold rounded-full shadow-md hover:shadow-lg transition-all"
             >
-              <span className="relative z-10">Get Started</span>
-            </button>
+              Get Started
+            </motion.button>
           )}
         </div>
       </header>
 
-      {/* MOBILE MENU */}
+      {/* MOBILE MENU DROPDOWN */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white shadow-lg py-4 px-6 flex flex-col gap-4">
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          className="md:hidden bg-white/10 backdrop-blur-lg text-white py-4 px-6 flex flex-col gap-4 border-t border-white/20"
+        >
           {user ? (
-            <>
-              <p className="text-lg font-medium">Welcome Back</p>
-              <button
-                className="w-full px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
-                onClick={() => {
-                  navigate('/dashboard');
-                  setMobileMenuopen(false);
-                }}
-              >
-                Go to Dashboard
-              </button>
-            </>
+            <button
+              className="w-full px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition"
+              onClick={() => {
+                navigate("/dashboard");
+                setMobileMenuOpen(false);
+              }}
+            >
+              Go to Dashboard
+            </button>
           ) : (
             <button
-              className="w-full px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-lg hover:opacity-90 transition"
+              className="w-full px-4 py-2 bg-gradient-to-r from-cyan-400 to-indigo-400 text-gray-900 font-semibold rounded-lg hover:opacity-90 transition"
               onClick={() => {
                 handleCTA();
-                setMobileMenuopen(false);
+                setMobileMenuOpen(false);
               }}
             >
               Get Started
             </button>
           )}
-        </div>
+        </motion.div>
       )}
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1">
-
-        {/* HERO */}
-        <section className="flex flex-col md:flex-row items-center justify-between px-6 md:px-20 py-16 gap-12">
-          {/* Left content */}
-          <div className="flex flex-col gap-6 text-center md:text-left max-w-2xl">
-            <span className="uppercase text-violet-600 font-semibold tracking-wide">
-              Professional Resume Builder
-            </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-              Craft{' '}
-              <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-                Professional
-              </span>{' '}
-              Resumes
-            </h1>
-            <p className="text-lg text-gray-600">
-              Create job-winning resumes with expertly designed templates.
-              ATS-friendly, recruiter-approved, and tailored to your career goals.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-4">
-              <button
-                onClick={handleCTA}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-full font-semibold shadow-md hover:scale-105 transition"
-              >
-                Start Building <ArrowRight size={18} />
-              </button>
-              <button
-                onClick={handleCTA}
-                className="px-6 py-3 border-2 border-violet-600 text-violet-600 rounded-full font-semibold hover:bg-violet-50 transition"
-              >
-                View Templates
-              </button>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12">
-              {[
-                { value: '50K+', label: 'Resumes Created', gradient: 'from-violet-600 to-fuchsia-600' },
-                { value: '4.9★', label: 'User Rating', gradient: 'from-orange-500 to-red-500' },
-                { value: '5 Min', label: 'Build Time', gradient: 'from-emerald-500 to-teal-500' }
-              ].map((stat, idx) => (
-                <div key={idx} className="flex flex-col items-center">
-                  <div
-                    className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}
-                  >
-                    {stat.value}
-                  </div>
-                  <div className="text-gray-600 font-medium">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right content – Resume Mockup */}
-          <div className="flex justify-center md:justify-end w-full md:w-1/2">
-            <div className="w-80 h-[400px] bg-white rounded-2xl shadow-2xl p-6 flex flex-col gap-4 border border-gray-200">
-              {/* Header */}
-              <div className="h-8 bg-gray-200 rounded w-2/3 animate-pulse"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/2 animate-pulse"></div>
-              
-              {/* Sections */}
-              <div className="flex flex-col gap-3 mt-4">
-                {[1,2,3,4,5].map((i) => (
-                  <div key={i} className="h-3 bg-gray-200 rounded w-full animate-pulse"></div>
-                ))}
-              </div>
-
-              {/* Footer / Skills */}
-              <div className="mt-auto flex gap-2 flex-wrap">
-                {['React', 'JavaScript', 'Tailwind'].map((skill, idx) => (
-                  <span key={idx} className="px-2 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* FEATURES */}
-        <section className="py-20 px-6 md:px-20 bg-gradient-to-b from-gray-50 to-white">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold">
-              Why Choose{' '}
-              <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-                ResumeXpert?
-              </span>
-            </h2>
-            <p className="text-gray-600 mt-4">
-              Everything you need to create a Professional Resume that stands out
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Zap className="w-8 h-8 text-white" />,
-                title: 'Lightning Fast',
-                description: 'Create resumes in under 5 minutes with our streamlined process',
-                gradient: 'from-violet-600 to-fuchsia-600'
-              },
-              {
-                icon: <LayoutTemplate className="w-8 h-8 text-white" />,
-                title: 'Pro Templates',
-                description: 'Dozens of recruiter-approved, industry-specific templates',
-                gradient: 'from-fuchsia-600 to-pink-500'
-              },
-              {
-                icon: <Download className="w-8 h-8 text-white" />,
-                title: 'Instant Export',
-                description: 'Download high-quality PDFs instantly with perfect formatting',
-                gradient: 'from-orange-500 to-red-500'
-              }
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="p-6 rounded-2xl shadow-lg bg-white hover:shadow-xl transition transform hover:-translate-y-2"
-              >
-                <div
-                  className={`w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-r ${feature.gradient} mb-4`}
-                >
-                  {feature.icon}
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="py-20 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Build Your Standout Resume?
-          </h2>
-          <p className="text-lg opacity-90 mb-8">
-            Join thousands of professionals who landed their dream jobs with our platform
+      {/* HERO */}
+      <section className="flex flex-col md:flex-row items-center justify-between px-8 md:px-20 py-20 gap-12 relative z-10">
+        {/* LEFT CONTENT */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="flex flex-col gap-6 text-center md:text-left max-w-2xl"
+        >
+          <span className="uppercase text-sm tracking-widest flex items-center justify-center md:justify-start gap-2 text-cyan-300">
+            <Sparkles className="w-4 h-4" /> AI-Powered Resume Builder
+          </span>
+          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
+            Build Your <span className="text-cyan-300">Career-Ready</span> Resume Instantly ⚡
+          </h1>
+          <p className="text-lg text-gray-300 max-w-lg mx-auto md:mx-0">
+            Create stunning, professional resumes in minutes with AI assistance and modern templates.
           </p>
-          <button
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-6">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-400 to-indigo-400 text-gray-900 rounded-full font-semibold shadow-md hover:shadow-lg transition"
+              onClick={handleCTA}
+            >
+              Start Building <ArrowRight size={18} />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              className="px-6 py-3 border border-white/40 text-white/90 rounded-full font-semibold hover:bg-white/10 transition"
+              onClick={handleCTA}
+            >
+              Explore Templates
+            </motion.button>
+          </div>
+        </motion.div>
+
+        {/* RIGHT IMAGE */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="relative flex justify-center md:justify-end w-full md:w-1/2"
+        >
+          <div className="relative group">
+            <motion.img
+              src={resumePreview}
+              alt="Resume Preview"
+              className="relative z-10 w-80 sm:w-72 md:w-96 rounded-2xl border border-white/10 shadow-2xl"
+              animate={{
+                y: [0, -6, 0],
+                rotate: [0, -1, 1, 0],
+              }}
+              transition={{
+                repeat: Infinity,
+                repeatType: "mirror",
+                duration: 6,
+                ease: "easeInOut",
+              }}
+            />
+            <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-sm font-semibold text-white shadow-md border border-white/20">
+              ✨ AI-Generated Resume
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="py-24 px-6 md:px-20 bg-slate-900/70 backdrop-blur-md text-white relative z-10 border-t border-white/10">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center max-w-3xl mx-auto mb-16"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">
+            Why Choose{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">
+              ResumeRocket
+            </span>
+          </h2>
+          <p className="text-gray-400">
+            Experience the power of modern design and AI-driven resume writing.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {[
+            {
+              icon: <Zap className="w-8 h-8 text-white" />,
+              title: "Lightning Fast",
+              desc: "Generate professional resumes in under 5 minutes.",
+              gradient: "from-cyan-400 to-indigo-400",
+            },
+            {
+              icon: <LayoutDashboard className="w-8 h-8 text-white" />,
+              title: "Smart Templates",
+              desc: "Clean, modern, and ATS-friendly designs for every career.",
+              gradient: "from-indigo-500 to-purple-500",
+            },
+            {
+              icon: <Download className="w-8 h-8 text-white" />,
+              title: "Instant Export",
+              desc: "Download high-quality, print-ready PDFs instantly.",
+              gradient: "from-blue-500 to-cyan-400",
+            },
+          ].map((f, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ y: -6 }}
+              className="p-8 rounded-2xl bg-white/5 border border-white/10 shadow-md hover:shadow-xl transition-all"
+            >
+              <div
+                className={`w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-r ${f.gradient} mb-4`}
+              >
+                {f.icon}
+              </div>
+              <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
+              <p className="text-gray-400">{f.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-24 bg-gradient-to-r from-cyan-400 to-indigo-500 text-gray-900 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2),transparent_70%)]" />
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Build Your Future?
+          </h2>
+          <p className="text-lg opacity-80 mb-8">
+            Join 50,000+ professionals crafting beautiful resumes today.
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            className="px-8 py-4 bg-slate-900 text-white font-semibold rounded-full shadow-xl hover:shadow-2xl transition"
             onClick={handleCTA}
-            className="px-8 py-4 bg-white text-violet-600 font-semibold rounded-full shadow-lg hover:scale-105 transition"
           >
-            Start Building
-          </button>
-        </section>
-      </main>
+            Get Started for Free
+          </motion.button>
+        </motion.div>
+      </section>
 
       {/* FOOTER */}
-      <footer className="text-center py-6 border-t text-gray-600">
-        Crafted with <span className="text-red-500">❤️</span> by{' '}
-        <span className="font-semibold">SANAT</span>.
+      <footer className="text-center py-6 border-t border-white/10 bg-slate-950 text-gray-400">
+        © {new Date().getFullYear()} ResumeRocket — Built with 💙 by{" "}
+        <span className="font-semibold text-cyan-400">SANAT</span>
       </footer>
 
-      {/* MODAL */}
+      {/* AUTH MODAL */}
       <Modal
         isOpen={openAuthModal}
         onClose={() => {
           setOpenAuthModal(false);
-          setCurrentPage('login');
+          setCurrentPage("login");
         }}
         hideHeader
       >
-        {currentPage === 'login' && <Login setCurrentPage={setCurrentPage} />}
-        {currentPage === 'signup' && <Signup setCurrentPage={setCurrentPage} />}
+        {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
+        {currentPage === "signup" && <Signup setCurrentPage={setCurrentPage} />}
       </Modal>
     </div>
   );

@@ -2,15 +2,15 @@ import React from "react";
 import TemplateOne from "./TemplateOne";
 import TemplateTwo from "./TemplateTwo";
 import TemplateThree from "./TemplateThree";
-import { Github, Linkedin, Globe } from "lucide-react"; // fix: Github instead of GitHub
+import { Github, Linkedin, Globe } from "lucide-react";
 
-// Component to render clickable social icons
-const SocialLinks = ({ contactInfo }) => {
+/* -------------------- Social Links -------------------- */
+const SocialLinks = ({ contactInfo, primaryColor }) => {
   if (!contactInfo) return null;
 
   const links = [
     { icon: <Linkedin size={18} />, url: contactInfo.linkedin },
-    { icon: <Github size={18} />, url: contactInfo.github }, // fixed
+    { icon: <Github size={18} />, url: contactInfo.github },
     { icon: <Globe size={18} />, url: contactInfo.website },
   ];
 
@@ -24,7 +24,10 @@ const SocialLinks = ({ contactInfo }) => {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: "#000" }}
+              style={{
+                color: primaryColor || "#000",
+                transition: "color 0.3s ease",
+              }}
             >
               {link.icon}
             </a>
@@ -34,24 +37,81 @@ const SocialLinks = ({ contactInfo }) => {
   );
 };
 
-const RenderResume = ({ templateId, resumeData, containerWidth }) => {
-  // Enhance resumeData with clickable social icons
-  const enhancedResumeData = {
-    ...resumeData,
-    ContactLinksComponent: <SocialLinks contactInfo={resumeData.contactInfo} />,
+/* -------------------- Template Mapping -------------------- */
+const RenderResume = ({
+  templateId,
+  resumeData = {},
+  containerWidth,
+  themeConfig = {},
+}) => {
+  const { primaryColor, accentColor, fontFamily, layout } = themeConfig;
+
+  // ✅ Merge theme styles globally
+  const globalStyle = {
+    fontFamily: fontFamily || "'Poppins', sans-serif",
+    "--primary-color": primaryColor || "#6D28D9",
+    "--accent-color": accentColor || "#F472B6",
+    "--layout-type": layout || "modern",
+    transition: "all 0.3s ease-in-out",
   };
 
-  // Render template based on templateId
-  switch (templateId) {
-    case "01":
-      return <TemplateOne resumeData={enhancedResumeData} containerWidth={containerWidth} />;
-    case "02":
-      return <TemplateTwo resumeData={enhancedResumeData} containerWidth={containerWidth} />;
-    case "03":
-      return <TemplateThree resumeData={enhancedResumeData} containerWidth={containerWidth} />;
-    default:
-      return <TemplateOne resumeData={enhancedResumeData} containerWidth={containerWidth} />;
-  }
+  // ✅ Enhanced Resume Data with Social Links
+  const enhancedResumeData = {
+    ...resumeData,
+    ContactLinksComponent: (
+      <SocialLinks
+        contactInfo={resumeData?.contactInfo}
+        primaryColor={primaryColor}
+      />
+    ),
+  };
+
+  // ✅ Render Template Based on Selected ID
+  const renderTemplate = () => {
+    switch (templateId) {
+      case "01":
+        return (
+          <TemplateOne
+            resumeData={enhancedResumeData}
+            containerWidth={containerWidth}
+            themeConfig={themeConfig}
+          />
+        );
+      case "02":
+        return (
+          <TemplateTwo
+            resumeData={enhancedResumeData}
+            containerWidth={containerWidth}
+            themeConfig={themeConfig}
+          />
+        );
+      case "03":
+        return (
+          <TemplateThree
+            resumeData={enhancedResumeData}
+            containerWidth={containerWidth}
+            themeConfig={themeConfig}
+          />
+        );
+      default:
+        return (
+          <TemplateOne
+            resumeData={enhancedResumeData}
+            containerWidth={containerWidth}
+            themeConfig={themeConfig}
+          />
+        );
+    }
+  };
+
+  return (
+    <div
+      style={globalStyle}
+      className="resume-container border border-gray-200 rounded-2xl shadow-sm bg-white p-6"
+    >
+      {renderTemplate()}
+    </div>
+  );
 };
 
 export default RenderResume;
