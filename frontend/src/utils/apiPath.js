@@ -1,11 +1,13 @@
 // frontend/src/utils/apiPath.js
 
 // ✅ Auto-detect environment: use Render in prod, localhost in dev
-export const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
   (window.location.hostname === "localhost"
     ? "http://localhost:4000"
-    : "https://resumebuilder-backend.onrender.com"); // ✅ backend Render URL (check spelling!)
+    : "https://resumebuilder-backned.onrender.com"); // ✅ backend Render URL (check spelling!)
+
+export const BASE_URL = API_BASE_URL;
 
 export const API_PATHS = {
   AUTH: {

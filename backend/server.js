@@ -18,24 +18,16 @@ const app = express();
 // ✅ Use Render-assigned PORT (fallback 4000 for local dev)
 const PORT = process.env.PORT || 4000;
 
-// ✅ Allowed origins (local + deployed frontend)
 const allowedOrigins = [
-  "http://localhost:5173", // Local Vite frontend
-  "https://resumebuilder-frontend-6gjz.onrender.com", // Deployed Render frontend
+  "http://localhost:5173",
+  "https://resumebuilder-frontend-6gjz.onrender.com",
 ];
 
 // ✅ Configure CORS
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 

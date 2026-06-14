@@ -8,10 +8,6 @@ import { extractResumeLinks, extractLinksFromText, normalizeUrl } from "./extrac
 // Support both CommonJS and ES Module export styles safely
 const pdfParse = pdfParseModule.default || pdfParseModule;
 
-// Startup diagnostic logging
-console.log("pdfParse:", pdfParse);
-console.log("typeof pdfParse:", typeof pdfParse);
-
 const PROGRAMMING_LANGUAGES_AND_TECH = new Set([
   "javascript", "typescript", "python", "java", "c++", "c#", "c", "ruby", "go", "golang", "rust",
   "kotlin", "swift", "php", "sql", "html", "css", "bash", "shell", "r", "dart", "scala",

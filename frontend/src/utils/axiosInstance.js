@@ -1,6 +1,6 @@
 // ✅ axiosInstance.js — Final, Production Ready
 import axios from "axios";
-import { BASE_URL } from "./apiPath";
+import { API_BASE_URL } from "./apiPath";
 import toast from "react-hot-toast";
 
 /**
@@ -14,13 +14,16 @@ import toast from "react-hot-toast";
  */
 
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
+  withCredentials: true,
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
+
+export const api = axiosInstance;
 
 // ✅ REQUEST INTERCEPTOR — Attach Bearer token
 axiosInstance.interceptors.request.use(
