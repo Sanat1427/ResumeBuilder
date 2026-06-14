@@ -7,22 +7,112 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies
+node_modules/
+
+# Build Outputs
+dist/
+dist-ssr/
+build/
+.next/
+out/
+coverage/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Local Config
 *.local
 
-# Editor directories and files
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swp
 
-# Environment variables
-.env
-.env.*
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+.vite/
+.npm/
+.pnpm-store/
+
+# Runtime Files
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Uploads / Generated Files
+uploads/
+temp/
+tmp/
+
+# PDF Exports
+generated-resumes/
+exports/
+
+# AI Files
+vector-db/
+embeddings/
+chroma/
+faiss/
+index-store/
+
+# Backend Secrets
+service-account.json
+firebase-adminsdk.json
+credentials.json
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Testing
+coverage/
+.nyc_output/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Mac
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# Windows
+ehthumbs.db
+
+# Vercel
+.vercel/
+
+# Netlify
+.netlify/
+
+# Railway
+.railway/
+
+# Render
+.render/
+
+# MongoDB
+mongodb-data/
+
+# Misc
+*.tgz

@@ -1,0 +1,33 @@
+Alexander Mercer
+Senior Software Engineer
+Email: alex.mercer@example.com
+Phone: (555) 019-2834
+Location: San Francisco, CA
+LinkedIn: linkedin.com/in/alex-mercer-dev
+GitHub: github.com/alexmercer
+Website: alexmercer.dev
+
+SUMMARY
+Dedicated Senior Full Stack Engineer with 6+ years of experience specializing in building responsive React applications and robust Node.js backend microservices. Proven track record of containerizing services, optimizing database performance, and driving engineering excellence.
+
+EXPERIENCE
+Software Engineer | Stripe (2022-06 - Present) | San Francisco, CA
+- Architected developer dashboard APIs using Node.js and TypeScript, reducing client-side load times by 40%.
+- Containerized 12 backend microservices with Docker, standardizing dev/prod parity.
+- Maintained CI/CD pipelines to deploy containerized workloads to AWS ECS safely.
+
+Full Stack Developer | Acme Corp (2020-09 - 2022-05) | Austin, TX
+- Developed high-volume e-commerce checkout page utilizing React, Redux, Node.js, and MongoDB.
+- Optimised Mongoose database queries, achieving a 30% reduction in database read operations.
+
+EDUCATION
+B.S. in Computer Science | Stanford University (2016-09 - 2020-06) | Stanford, CA
+
+SKILLS
+React, Node.js, Express, TypeScript, JavaScript, MongoDB, Docker, Kubernetes, AWS, CI/CD, Redis, SQL
+
+CERTIFICATIONS
+AWS Certified Solutions Architect (2024)
+
+LANGUAGES
+English (Native), Spanish (Conversational)

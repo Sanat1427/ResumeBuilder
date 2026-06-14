@@ -34,9 +34,17 @@ const Login = ({ setCurrentPage }) => {
     }
 
     setError('');
+
     try {
-      console.log('📡 Sending login request to:', API_PATHS.AUTH.LOGIN);
-      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, { email, password });
+      // 👇 Print the full URL we’re hitting
+      const fullUrl = axiosInstance.defaults.baseURL + API_PATHS.AUTH.LOGIN;
+      console.log('📡 Sending login request to:', fullUrl);
+
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+        email,
+        password,
+      });
+
       console.log('✅ Response received:', response.data);
 
       const { token } = response.data;

@@ -2,6 +2,7 @@ import Resume from '../models/resumeModels.js'
 import fs from 'fs'
 import path from 'path';
 
+// Create Resume
 export const createResume = async (req, res) => {
     try {
         const { title } = req.body;
@@ -21,6 +22,9 @@ export const createResume = async (req, res) => {
                 linkedin: '',
                 github: '',
                 website: '',
+                leetcode: '',
+                codechef: '',
+                portfolio: '',
             },
             workExperience: [
                 {
@@ -109,6 +113,21 @@ export const getResumeById = async (req, res) => {
 // update resumes
 export const updateResume = async (req, res) => {
     try {
+        const {
+            title,
+            thumbnailLink,
+            template,
+            profileInfo,
+            contactInfo,
+            workExperience,
+            education,
+            skills,
+            projects,
+            certifications,
+            languages,
+            interests
+        } = req.body;
+
         const resume = await Resume.findOne({
             _id: req.params.id,
             userId: req.user._id
@@ -116,8 +135,21 @@ export const updateResume = async (req, res) => {
         if (!resume) {
             return res.status(404).json({ message: "Resume not found or authorized" })
         }
-        // Merge updated resume
-        Object.assign(resume, req.body)
+
+        // Secure update - allow modifying only specific fields
+        if (title) resume.title = title;
+        if (thumbnailLink) resume.thumbnailLink = thumbnailLink;
+        if (template) resume.template = template;
+        if (profileInfo) resume.profileInfo = profileInfo;
+        if (contactInfo) resume.contactInfo = contactInfo;
+        if (workExperience) resume.workExperience = workExperience;
+        if (education) resume.education = education;
+        if (skills) resume.skills = skills;
+        if (projects) resume.projects = projects;
+        if (certifications) resume.certifications = certifications;
+        if (languages) resume.languages = languages;
+        if (interests) resume.interests = interests;
+
         // Save updated resume
         const savedResume = await resume.save();
         res.json(savedResume)

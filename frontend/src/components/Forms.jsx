@@ -2,7 +2,7 @@
 
 import Input from "./Input";
 import { RatingInput } from "./ResumeSection";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Sparkles, Loader2 } from "lucide-react";
 import {
   commonStyles,
   additionalInfoStyles,
@@ -232,12 +232,29 @@ export const ContactInfoForm = ({ contactInfo = {}, updateSection = () => {} }) 
           onChange={({ target }) => updateSection("github", target.value)}
         />
 
+        <Input
+          label="LeetCode"
+          placeholder="https://leetcode.com/username"
+          value={contactInfo?.leetcode || ""}
+          onChange={({ target }) => updateSection("leetcode", target.value)}
+        />
+
+        <Input
+          label="CodeChef"
+          placeholder="https://codechef.com/users/username"
+          value={contactInfo?.codechef || ""}
+          onChange={({ target }) => updateSection("codechef", target.value)}
+        />
+
         <div className="md:col-span-2">
           <Input
             label="Portfolio / Website"
             placeholder="https://yourwebsite.com"
-            value={contactInfo?.website || ""}
-            onChange={({ target }) => updateSection("website", target.value)}
+            value={contactInfo?.portfolio || contactInfo?.website || ""}
+            onChange={({ target }) => {
+              updateSection("portfolio", target.value);
+              updateSection("website", target.value);
+            }}
           />
         </div>
       </div>
@@ -318,8 +335,15 @@ export const EducationDetailsForm = ({
   );
 };
 
-/* ----------------------------- Profile Info ----------------------------- */
-export const ProfileInfoForm = ({ profileData = {}, updateSection = () => {} }) => {
+export const ProfileInfoForm = ({
+  profileData = {},
+  updateSection = () => {},
+  activeInlineAI = {},
+  triggerInlineAI = () => {},
+  acceptInlineAI = () => {},
+  regenerateInlineAI = () => {},
+  cancelInlineAI = () => {}
+}) => {
   return (
     <div className={profileInfoStyles.container}>
       <h2 className={profileInfoStyles.heading}>Personal Information</h2>
@@ -349,6 +373,57 @@ export const ProfileInfoForm = ({ profileData = {}, updateSection = () => {} }) 
               value={profileData?.summary || ""}
               onChange={({ target }) => updateSection("summary", target.value)}
             />
+
+            {/* AI Suggestion Box */}
+            {activeInlineAI.section === "summary" && (
+              <div className="mt-3 p-4 border-2 border-black bg-[#ffe17c]/5 shadow-[4px_4px_0px_#000] flex flex-col gap-3">
+                {activeInlineAI.loading ? (
+                  <div className="flex items-center gap-2 font-bold text-xs">
+                    <Loader2 className="animate-spin text-black" size={16} />
+                    Generating summary...
+                  </div>
+                ) : (
+                  <>
+                    <div className="font-semibold text-xs text-slate-800 bg-white border border-black p-3 whitespace-pre-wrap leading-relaxed shadow-[2px_2px_0px_#000]">
+                      {activeInlineAI.suggestion}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={acceptInlineAI}
+                        className="px-3 py-1.5 bg-black text-white hover:bg-neutral-800 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#ffe17c]"
+                      >
+                        Use This Summary
+                      </button>
+                      <button
+                        type="button"
+                        onClick={regenerateInlineAI}
+                        className="px-3 py-1.5 bg-white text-black hover:bg-slate-100 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]"
+                      >
+                        Regenerate
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelInlineAI}
+                        className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {activeInlineAI.section !== "summary" && (
+              <button
+                type="button"
+                onClick={() => triggerInlineAI("summary", null, profileData?.summary || "")}
+                className="flex items-center gap-1.5 mt-2 text-xs font-black bg-[#ffe17c] text-black border-2 border-black px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#000] transition-all cursor-pointer"
+              >
+                <Sparkles size={14} /> Generate Summary
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -361,7 +436,12 @@ export const ProjectDetailForm = ({
   projectInfo = [],
   updateArrayItem = () => {},
   addArrayItem = () => {},
-  removeArrayItem = () => {}
+  removeArrayItem = () => {},
+  activeInlineAI = {},
+  triggerInlineAI = () => {},
+  acceptInlineAI = () => {},
+  regenerateInlineAI = () => {},
+  cancelInlineAI = () => {}
 }) => {
   return (
     <div className={projectDetailStyles.container}>
@@ -388,6 +468,62 @@ export const ProjectDetailForm = ({
                   value={project?.description || ""}
                   onChange={({ target }) => updateArrayItem(index, "description", target.value)}
                 />
+
+                {/* AI Suggestion Box */}
+                {activeInlineAI.section === "project" && activeInlineAI.index === index && (
+                  <div className="mt-3 p-4 border-2 border-black bg-[#ffe17c]/5 shadow-[4px_4px_0px_#000] flex flex-col gap-3">
+                    {activeInlineAI.loading ? (
+                      <div className="flex items-center gap-2 font-bold text-xs">
+                        <Loader2 className="animate-spin text-black" size={16} />
+                        Generating project description...
+                      </div>
+                    ) : (
+                      <>
+                        <div className="font-semibold text-xs text-slate-800 bg-white border border-black p-3 whitespace-pre-wrap leading-relaxed shadow-[2px_2px_0px_#000]">
+                          {activeInlineAI.suggestion}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={acceptInlineAI}
+                            className="px-3 py-1.5 bg-black text-white hover:bg-neutral-800 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#ffe17c]"
+                          >
+                            Add to Resume
+                          </button>
+                          <button
+                            type="button"
+                            onClick={regenerateInlineAI}
+                            className="px-3 py-1.5 bg-white text-black hover:bg-slate-100 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]"
+                          >
+                            Regenerate
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cancelInlineAI}
+                            className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {!(activeInlineAI.section === "project" && activeInlineAI.index === index) && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      triggerInlineAI("project", index, project?.description || "", {
+                        title: project?.title || "",
+                        technologies: ""
+                      })
+                    }
+                    className="flex items-center gap-1.5 mt-2 text-xs font-black bg-[#ffe17c] text-black border-2 border-black px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#000] transition-all cursor-pointer"
+                  >
+                    <Sparkles size={14} /> Generate Description
+                  </button>
+                )}
               </div>
 
               <Input
@@ -436,12 +572,17 @@ export const ProjectDetailForm = ({
   );
 };
 
-/* ----------------------------- Skills ----------------------------- */
 export const SkillsInfoForm = ({
   skillsInfo = [],
   updateArrayItem = () => {},
   addArrayItem = () => {},
-  removeArrayItem = () => {}
+  removeArrayItem = () => {},
+  activeInlineAI = {},
+  triggerInlineAI = () => {},
+  acceptInlineAI = () => {},
+  regenerateInlineAI = () => {},
+  cancelInlineAI = () => {},
+  toggleSkillSelect = () => {}
 }) => {
   return (
     <div className={skillsInfoStyles.container}>
@@ -487,29 +628,106 @@ export const SkillsInfoForm = ({
           </div>
         ))}
 
-        <button
-          type="button"
-          className={`${commonStyles.addButtonBase} ${skillsInfoStyles.addButton}`}
-          onClick={() =>
-            addArrayItem({
-              name: "",
-              progress: 0
-            })
-          }
-        >
-          <Plus size={16} /> Add Skill
-        </button>
+        <div className="flex flex-wrap gap-4 items-center">
+          <button
+            type="button"
+            className={`${commonStyles.addButtonBase} ${skillsInfoStyles.addButton}`}
+            onClick={() =>
+              addArrayItem({
+                name: "",
+                progress: 0
+              })
+            }
+          >
+            <Plus size={16} /> Add Skill
+          </button>
+
+          {activeInlineAI.section !== "skills" && (
+            <button
+              type="button"
+              onClick={() => triggerInlineAI("skills", null, "")}
+              className="flex items-center gap-1.5 text-xs font-black bg-[#ffe17c] text-black border-2 border-black px-4 py-2.5 shadow-[4px_4px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#000] transition-all cursor-pointer w-fit"
+            >
+              <Sparkles size={14} /> Suggest Skills
+            </button>
+          )}
+        </div>
+
+        {/* AI Skill Suggestion Box */}
+        {activeInlineAI.section === "skills" && (
+          <div className="mt-4 p-4 border-2 border-black bg-[#ffe17c]/5 shadow-[4px_4px_0px_#000] flex flex-col gap-3">
+            {activeInlineAI.loading ? (
+              <div className="flex items-center gap-2 font-bold text-xs">
+                <Loader2 className="animate-spin text-black" size={16} />
+                Suggesting skills and keywords...
+              </div>
+            ) : (
+              <>
+                <label className="block text-xs font-black uppercase text-black">
+                  Recommended Skills (Select to add):
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {Array.isArray(activeInlineAI.suggestion) && activeInlineAI.suggestion.map((skillName, i) => {
+                    const isSelected = activeInlineAI.selectedSkills.includes(skillName);
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => toggleSkillSelect(skillName)}
+                        className={`px-2.5 py-1 text-xs font-extrabold border-2 border-black transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-[#ffe17c] text-black shadow-[2px_2px_0px_#000]"
+                            : "bg-white text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        {isSelected ? "✓ " : "+ "}
+                        {skillName}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={acceptInlineAI}
+                    className="px-3 py-1.5 bg-black text-white hover:bg-neutral-800 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#ffe17c]"
+                  >
+                    Add Selected Skills
+                  </button>
+                  <button
+                    type="button"
+                    onClick={regenerateInlineAI}
+                    className="px-3 py-1.5 bg-white text-black hover:bg-slate-100 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]"
+                  >
+                    Regenerate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelInlineAI}
+                    className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-/* ----------------------------- Work Experience ----------------------------- */
 export const WorkExperienceForm = ({
   workExperience = [],
   updateArrayItem = () => {},
   addArrayItem = () => {},
-  removeArrayItem = () => {}
+  removeArrayItem = () => {},
+  activeInlineAI = {},
+  triggerInlineAI = () => {},
+  acceptInlineAI = () => {},
+  regenerateInlineAI = () => {},
+  cancelInlineAI = () => {}
 }) => {
   return (
     <div className={workExperienceStyles.container}>
@@ -558,6 +776,62 @@ export const WorkExperienceForm = ({
                   updateArrayItem(index, "description", target.value)
                 }
               />
+
+              {/* AI Suggestion Box */}
+              {activeInlineAI.section === "experience" && activeInlineAI.index === index && (
+                <div className="mt-3 p-4 border-2 border-black bg-[#ffe17c]/5 shadow-[4px_4px_0px_#000] flex flex-col gap-3">
+                  {activeInlineAI.loading ? (
+                    <div className="flex items-center gap-2 font-bold text-xs">
+                      <Loader2 className="animate-spin text-black" size={16} />
+                      Improving work description...
+                    </div>
+                  ) : (
+                    <>
+                      <div className="font-semibold text-xs text-slate-800 bg-white border border-black p-3 whitespace-pre-wrap leading-relaxed shadow-[2px_2px_0px_#000]">
+                        {activeInlineAI.suggestion}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={acceptInlineAI}
+                          className="px-3 py-1.5 bg-black text-white hover:bg-neutral-800 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#ffe17c]"
+                        >
+                          Apply to Resume
+                        </button>
+                        <button
+                          type="button"
+                          onClick={regenerateInlineAI}
+                          className="px-3 py-1.5 bg-white text-black hover:bg-slate-100 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]"
+                        >
+                          Regenerate
+                        </button>
+                        <button
+                          type="button"
+                          onClick={cancelInlineAI}
+                          className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {!(activeInlineAI.section === "experience" && activeInlineAI.index === index) && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    triggerInlineAI("experience", index, experience?.description || "", {
+                      role: experience?.role,
+                      company: experience?.company
+                    })
+                  }
+                  className="flex items-center gap-1.5 mt-2 text-xs font-black bg-[#ffe17c] text-black border-2 border-black px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#000] transition-all cursor-pointer"
+                >
+                  <Sparkles size={14} /> Improve with AI
+                </button>
+              )}
             </div>
 
             {workExperience.length > 1 && (

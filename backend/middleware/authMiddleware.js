@@ -1,21 +1,49 @@
- import User from '../models/userModel.js'
-import jwt from 'jsonwebtoken'
+import User from "../models/userModel.js";
+import jwt from "jsonwebtoken";
 
 export const protect = async (req, res, next) => {
-    try {
-        let token = req.headers.authorization;
-        if (typeof token === 'string' && token.startsWith("Bearer")) {
-            token = token.split(" ")[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = await User.findById(decoded.id).select('-password');
-            next();
-        } else {
-            res.status(401).json({ message: "Not authorized, no Token found" });
-        }
-    } catch (error) {
-        res.status(401).json({
-            message: "Token failed",
-            error: error.message
-        });
+  try {
+    let token;
+
+    // ✅ Check if the request has "Authorization" header
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer ")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
     }
-}
+
+    // ❌ No token provided
+    if (!token) {
+      return res.status(401).json({ message: "Not authorized, no token found" });
+    }
+
+    // ✅ Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // ✅ Attach user to request
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("❌ Auth error:", error.message);
+
+    // Handle JWT expiration or invalid signature specifically
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token expired, please log in again" });
+    }
+
+    if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({ message: "Invalid token, please log in again" });
+    }
+
+    res.status(401).json({
+      message: "Token verification failed",
+      error: error.message,
+    });
+  }
+};

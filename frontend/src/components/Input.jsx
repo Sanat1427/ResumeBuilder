@@ -1,11 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react'
-import { inputStyles, titleInputStyles, photoSelectorStyles } from '../assets/dummystyle'
-import { Check, Edit, Eye, EyeOff, Camera, Trash2 } from 'lucide-react'
+import React, { useRef, useState, useEffect } from 'react';
+import { inputStyles, titleInputStyles, photoSelectorStyles } from '../assets/dummystyle';
+import { Check, Edit, Eye, EyeOff, Camera, Trash2 } from 'lucide-react';
 
 const Input = ({ value, onChange, label, placeholder, type = 'text' }) => {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
-  const styles = inputStyles
+  const [showPassword, setShowPassword] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const styles = inputStyles;
 
   return (
     <div className={styles.wrapper}>
@@ -15,7 +15,7 @@ const Input = ({ value, onChange, label, placeholder, type = 'text' }) => {
           type={type === 'password' ? (showPassword ? 'text' : 'password') : type}
           placeholder={placeholder}
           className={styles.inputField}
-          value={value}
+          value={value || ''}
           onChange={onChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -26,41 +26,41 @@ const Input = ({ value, onChange, label, placeholder, type = 'text' }) => {
             onClick={() => setShowPassword(!showPassword)}
             className={styles.toggleButton}
           >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const ProfilePhotoSelector = ({ image, setImage, preview, setPreview }) => {
-  const inputRef = useRef(null)
-  const [previewUrl, setPreviewUrl] = useState(preview || null)
-  const [hovered, setHovered] = useState(false)
-  const styles = photoSelectorStyles
+  const inputRef = useRef(null);
+  const [previewUrl, setPreviewUrl] = useState(preview || null);
+  const [hovered, setHovered] = useState(false);
+  const styles = photoSelectorStyles;
 
   useEffect(() => {
-    if (preview) setPreviewUrl(preview)
-  }, [preview])
+    if (preview) setPreviewUrl(preview);
+  }, [preview]);
 
   const handleImageChange = e => {
-    const file = e.target.files[0]
+    const file = e.target.files[0];
     if (file) {
-      setImage(file)
-      const url = URL.createObjectURL(file)
-      setPreviewUrl(url)
-      setPreview?.(url)
+      setImage(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      setPreview?.(url);
     }
-  }
+  };
 
   const handleRemove = () => {
-    setImage(null)
-    setPreviewUrl(null)
-    setPreview?.(null)
-  }
+    setImage(null);
+    setPreviewUrl(null);
+    setPreview?.(null);
+  };
 
-  const chooseFile = () => inputRef.current.click()
+  const chooseFile = () => inputRef.current.click();
 
   return (
     <div className={styles.container}>
@@ -73,13 +73,13 @@ export const ProfilePhotoSelector = ({ image, setImage, preview, setPreview }) =
       />
       {!previewUrl ? (
         <div
-          className={styles.placeholder(hovered)}
+          className={`${styles.placeholder(hovered)} relative border-2 border-black rounded-none`}
           onClick={chooseFile}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
           <button type="button" className={styles.cameraButton}>
-            <Camera size={20} />
+            <Camera size={18} />
           </button>
         </div>
       ) : (
@@ -88,35 +88,35 @@ export const ProfilePhotoSelector = ({ image, setImage, preview, setPreview }) =
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
-          <div className={styles.previewImageContainer(hovered)} onClick={chooseFile}>
-            <img src={previewUrl} alt="profile" className={styles.previewImage} />
+          <div className={`${styles.previewImageContainer(hovered)} rounded-none border-2 border-black`} onClick={chooseFile}>
+            <img src={previewUrl} alt="profile" className="w-full h-full object-cover cursor-pointer" />
           </div>
           <div className={styles.overlay}>
             <button
               type="button"
-              className={styles.actionButton('white/80','white','gray-800')}
+              className={styles.actionButton()}
               onClick={chooseFile}
             >
-              <Edit size={16} />
+              <Edit size={12} />
             </button>
             <button
               type="button"
-              className={styles.actionButton('red-500','red-600','white')}
+              className="w-8 h-8 flex items-center justify-center bg-red-500 text-white border border-black rounded-none hover:bg-red-650 transition-all"
               onClick={handleRemove}
             >
-              <Trash2 size={16} />
+              <Trash2 size={12} />
             </button>
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 export const TitleInput = ({ title, setTitle }) => {
-  const [editing, setEditing] = useState(false)
-  const [focused, setFocused] = useState(false)
-  const styles = titleInputStyles
+  const [editing, setEditing] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const styles = titleInputStyles;
 
   return (
     <div className={styles.container}>
@@ -133,7 +133,7 @@ export const TitleInput = ({ title, setTitle }) => {
             autoFocus
           />
           <button className={styles.confirmButton} onClick={() => setEditing(false)}>
-            <Check className="w-5 h-5" />
+            <Check className="w-4 h-4" />
           </button>
         </>
       ) : (
@@ -145,7 +145,7 @@ export const TitleInput = ({ title, setTitle }) => {
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Input
+export default Input;

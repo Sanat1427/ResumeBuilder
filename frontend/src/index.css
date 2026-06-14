@@ -1,121 +1,139 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-    --font-display: "Urbanist", sans-serif;
+    --font-heading: "Cabinet Grotesk", "Urbanist", "Satoshi", sans-serif;
+    --font-body: "Satoshi", "Urbanist", sans-serif;
     --breakpoint-3xl: 1920px;
-    --color-primary: #9328E7;
+    --color-primary-yellow: #ffe17c;
+    --color-dark-bg: #171e19;
+    --color-accent-sage: #b7c6c2;
+    --color-neo-white: #ffffff;
+    --color-neo-black: #000000;
 }
 
 @layer base {
     html {
-        font-family: var(--font-display);
+        font-family: var(--font-body);
+        background-color: #fcfbfc;
+        color: #000000;
+        transition: background-color 0.2s ease;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        color: #000000;
     }
 
     body {
-        background-color: #fcfbfc;
+        background-color: #f8fafc;
         overflow-x: hidden;
     }
 }
 
-/* custom scrollbar styling */
+/* Custom Scrollbar for Neo-Brutalist Panels */
 .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
+    height: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(100, 100, 100, 0.4);
-    border-radius: 10px;
+    background-color: #000000;
+    border: 2px solid #ffffff;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
 }
 
+/* Neo-Brutalist Layout Utility Tokens */
+.neo-border {
+    border: 2px solid #000000;
+}
+
+.neo-border-thick {
+    border: 3px solid #000000;
+}
+
+.neo-shadow-sm {
+    box-shadow: 4px 4px 0px #000000;
+}
+
+.neo-shadow-md {
+    box-shadow: 8px 8px 0px #000000;
+}
+
+.neo-shadow-lg {
+    box-shadow: 12px 12px 0px #000000;
+}
+
+/* Push-button animations (large elements) */
+.neo-btn-push {
+    border: 2px solid #000000;
+    box-shadow: 8px 8px 0px #000000;
+    transform: translate(0);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+}
+
+.neo-btn-push:hover {
+    transform: translate(4px, 4px);
+    box-shadow: 4px 4px 0px #000000;
+}
+
+.neo-btn-push:active {
+    transform: translate(8px, 8px);
+    box-shadow: 0px 0px 0px #000000;
+}
+
+/* Push-button animations (small elements) */
+.neo-btn-push-sm {
+    border: 2px solid #000000;
+    box-shadow: 4px 4px 0px #000000;
+    transform: translate(0);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.neo-btn-push-sm:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000000;
+}
+
+.neo-btn-push-sm:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px #000000;
+}
+
+/* Infinity Marquee */
+@keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: marquee 20s linear infinite;
+}
+
+/* Custom Utilities */
 @layer utilities {
-    /* Animate text with a shine effect */
-
-    @keyframes text-shine {
-        0% {
-            background-position: 0% 50%;
-        }
-
-        100% {
-            background-position: 100% 50%;
-        }
+    /* Shimmer effect for loaders */
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
     }
-
-    .animate-text-shine {
-        animation: text-shine 3s ease-in-out infinite alternate;
-    }
-}
-
-.input-box {
-    @apply w-full flex justify-between gap-3 text-sm text-black bg-gray-50/50 rounded px-4 py-3 mb-4 mt-3 border border-gray-100 outline-none focus-within:border-purple-300;
-}
-
-.btn-primary {
-    @apply w-full text-sm font-medium text-white bg-black shadow-lg shadow-purple-600/5 p-[10px] rounded-md my-1 hover:bg-purple-600/15 hover:text-black cursor-pointer;
-}
-
-.btn-small {
-    @apply flex items-center gap-2 text-[13px] font-semibold text-white bg-linear-to-r from-purple-500/8 to-purple-700 px-5 py-1.5 rounded cursor-pointer;
-}
-
-.btn-small-light {
-    @apply flex items-center gap-2 text-[12px] font-semibold text-purple-800 bg-purple-600/15 border border-purple-50 hover:border-purple-400 px-3 py-1.5 rounded cursor-pointer;
-}
-
-.form-input {
-    @apply w-full text-sm text-black outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 placeholder:text-gray-500 focus-within:border-purple-300;
-}
-
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-fade-in {
-    animation: fade-in 0.5s ease forwards;
-    opacity: 0;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.animate-spin {
-    animation: spin 1s linear infinite;
-}
-
-@media print {
-    body * {
-        visibility: hidden;
-    }
-
-    .resume-container,
-    .resume-container * {
-        visibility: visible;
-    }
-
-    .resume-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 210mm !important;
+    
+    .animate-shimmer {
+        background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
     }
 }

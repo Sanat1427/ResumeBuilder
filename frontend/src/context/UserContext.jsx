@@ -7,6 +7,38 @@ export const UserContext = createContext();
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null); 
   const [loading, setLoading] = useState(true);
+  
+  // Theme state
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  // Theme effect
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
+  // AI Mode State
+  const [aiMode, setAiMode] = useState(() => {
+    return localStorage.getItem('aiMode') || 'balanced';
+  });
+
+  const updateAiMode = (newMode) => {
+    setAiMode(newMode);
+    localStorage.setItem('aiMode', newMode);
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+  };
 
   const clearUser = () => {
     setUser(null);
@@ -41,10 +73,11 @@ const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, updateUser, clearUser }}>
+    <UserContext.Provider value={{ user, loading, updateUser, clearUser, darkMode, toggleDarkMode, aiMode, updateAiMode }}>
       {children}
     </UserContext.Provider>
   );
 };
 
 export default UserProvider;
+

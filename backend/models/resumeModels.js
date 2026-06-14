@@ -17,7 +17,7 @@ const ResumeSchema = new mongoose.Schema({
         theme:String,
         colorPalette:[String]
     },
-     profleInfo:{
+     profileInfo:{
         profilePreviewUrl:String,
         fullName:String,
         designation: String,
@@ -30,7 +30,9 @@ const ResumeSchema = new mongoose.Schema({
         linkedin:String,
         github:String,
         website:String,
-
+        leetcode:String,
+        codechef:String,
+        portfolio:String,
      },
      // Work exp
      workExperience:[
@@ -62,7 +64,7 @@ const ResumeSchema = new mongoose.Schema({
             title:String,
             description:String,
             github:String,
-            livedemo:String,
+            liveDemo:String,
         },
      ],
      certifications:[
@@ -79,11 +81,11 @@ const ResumeSchema = new mongoose.Schema({
 
         },
      ],
-     interest:[String],
+     interests:[String],
 
 },
 {
-    timestamps:{createdAt:"createAt",updatedAt:"updatedAt" }
+    timestamps: true
 }
 );
 
