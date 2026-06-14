@@ -57,14 +57,14 @@ const Signup = ({ setCurrentPage }) => {
   };
 
   return (
-    <div className={styles.signupContainer}>
-      <div className={styles.signupTitle}>
-        <h3 className={styles.signupTitle}>Create Account</h3>
-        <p className={styles.signupSubtitle}>Join thousands of professionals today</p>
+    <div className={styles.container}>
+      <div className={styles.headerWrapper}>
+        <h3 className={styles.title}>Create Account</h3>
+        <p className={styles.subtitle}>Join thousands of professionals today</p>
       </div>
 
       {/* FORM */}
-      <form onSubmit={handleSignUp} className={styles.signupForm}>
+      <form onSubmit={handleSignUp} className={styles.form}>
         <Input
           value={fullName}
           onChange={({ target }) => setFullName(target.value)}
@@ -89,7 +89,7 @@ const Signup = ({ setCurrentPage }) => {
 
         {error && <div className={styles.errorMessage}>{error}</div>}
 
-        <button type="submit" className={styles.signupSubmit}>
+        <button type="submit" className={styles.submitButton}>
           Create Account
         </button>
 
@@ -99,7 +99,7 @@ const Signup = ({ setCurrentPage }) => {
           <button
             onClick={() => setCurrentPage('login')}
             type="button"
-            className={styles.signupSwitchButton}
+            className={styles.switchButton}
           >
             Sign In
           </button>
