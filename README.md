@@ -1,135 +1,450 @@
-# 🚀 AI-Powered Resume Builder
+# 🚀 ResumeRocket - AI-Powered Resume Optimization Platform
 
-A modern, full-stack application that helps users create professional, ATS-optimized resumes using the power of Google's Gemini AI.
+<div align="center">
 
-## ✨ Features
+### Build ATS-Optimized Resumes with AI
 
-- **AI-Powered Generation**: Utilize Google Gemini AI to generate professional summaries, descriptions, and skills based on your inputs.
-- **Real-time Preview**: See your resume updates in real-time as you edit.
-- **PDF Export**: Download your polished resume as a high-quality PDF.
-- **User Authentication**: Secure signup and login to save and manage your resumes.
-- **Multiple Templates**: Choose from various professional resume templates (in progress).
-- **Responsive Design**: Built with a mobile-first approach for use on any device.
+Create, optimize, analyze, and tailor professional resumes using AI-powered assistance.
 
-## 🛠️ Tech Stack
+![React](https://img.shields.io/badge/Frontend-React%2019-blue)
+![NodeJS](https://img.shields.io/badge/Backend-Node.js-green)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
+![AI](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq-orange)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
-### Frontend
-- **Framework**: [React](https://react.dev/) (with [Vite](https://vitejs.dev/))
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **State Management**: React Hooks
-- **PDF Generation**: `jspdf`, `html2canvas`
-- **Routing**: React Router DOM
+[Live Demo](#) • [Architecture](docs/architecture.md) • [System Design](docs/system_design.md) • [Interview Guide](docs/interview_guide.md)
 
-### Backend
-- **Runtime**: [Node.js](https://nodejs.org/)
-- **Framework**: [Express.js](https://expressjs.com/)
-- **Database**: [MongoDB](https://www.mongodb.com/) (with Mongoose)
-- **AI Integration**: Google Generative AI SDK (`@google/generative-ai`)
-- **Authentication**: JWT (JSON Web Tokens) & `bcryptjs`
+</div>
 
-## ⚙️ Prerequisites
+---
 
-Before you begin, ensure you have the following installed:
-- [Node.js](https://nodejs.org/en/) (v14 or higher)
-- [MongoDB](https://www.mongodb.com/try/download/community) (running locally or a cloud URI)
-- A [Google Gemini API Key](https://aistudio.google.com/app/apikey)
+# 📌 Overview
 
-## 🚀 Getting Started
+ResumeRocket is a full-stack AI-powered Resume Optimization Platform designed to help students, job seekers, and professionals create highly optimized resumes for modern hiring systems.
 
-Follow these steps to set up the project locally.
+Unlike traditional resume builders, ResumeRocket combines AI-assisted content generation, ATS optimization, resume parsing, job description matching, and intelligent resume reviews into a single platform.
 
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd Resume-builder
+Users can generate resumes from scratch, import existing resumes, optimize them for specific job descriptions, and continuously improve their ATS readiness using actionable AI feedback.
+
+---
+
+# ✨ Features
+
+## 🎯 Resume Builder
+
+* Dynamic Resume Creation
+* Real-Time Resume Preview
+* Professional Resume Templates
+* Theme Customization
+* PDF Export
+* Mobile Responsive Interface
+
+---
+
+## 🤖 AI Resume Assistant
+
+Generate and improve:
+
+* Professional Summaries
+* Experience Descriptions
+* Project Descriptions
+* Technical Skills
+* Resume Content Refinement
+
+Powered by:
+
+* Google Gemini
+* Groq LLMs
+
+Includes intelligent model routing for improved performance and reliability.
+
+---
+
+## 📊 ATS Resume Analysis
+
+Analyze resumes against ATS standards.
+
+Provides:
+
+* ATS Score
+* Missing Keywords
+* Formatting Suggestions
+* Content Quality Review
+* Resume Completeness Analysis
+
+---
+
+## 🎯 Job Description Matching
+
+Paste any job description and instantly receive:
+
+* Match Score
+* Matching Skills
+* Missing Keywords
+* Optimization Suggestions
+* ATS Improvement Recommendations
+
+---
+
+## 📂 Resume Import & Parsing
+
+Import resumes from:
+
+* PDF
+* DOCX
+
+Automatically extracts:
+
+* Personal Information
+* Education
+* Experience
+* Projects
+* Skills
+* GitHub Links
+* LinkedIn Profiles
+* Portfolio URLs
+
+and converts them into editable resume data.
+
+---
+
+## 🔄 Resume Versioning
+
+Track changes and resume evolution.
+
+Features:
+
+* Snapshot Creation
+* Version History
+* Restore Previous Versions
+* Resume Progress Tracking
+
+---
+
+## 📈 Placement Analytics Dashboard
+
+Track:
+
+* Resume Score History
+* ATS Readiness
+* Template Usage
+* Resume Improvement Trends
+* Optimization Progress
+
+---
+
+# 🏗️ System Architecture
+
+```mermaid
+flowchart TD
+
+    User[User]
+
+    User --> Frontend[React Frontend]
+
+    Frontend --> Backend[Express Backend]
+
+    Backend --> Auth[Authentication]
+
+    Backend --> Resume[Resume Management]
+
+    Backend --> AI[AI Router]
+
+    Resume --> MongoDB[(MongoDB)]
+
+    AI --> Gemini[Gemini Models]
+
+    AI --> Groq[Groq Models]
+
+    Gemini --> AIResponse[AI Response]
+
+    Groq --> AIResponse
+
+    AIResponse --> Frontend
+
+    Resume --> PDFExport[PDF Export]
+
+    Resume --> Import[Resume Import]
+
+    Import --> PDFParser[PDF Parser]
+
+    Import --> DOCXParser[DOCX Parser]
 ```
 
-### 2. Backend Setup
-Navigate to the backend directory and install dependencies:
+---
 
-```bash
-cd backend
-npm install
+# 🧠 AI Architecture
+
+ResumeRocket uses a provider-agnostic AI routing layer.
+
+```mermaid
+flowchart LR
+
+    Request[AI Request]
+
+    Request --> Router[AI Router]
+
+    Router --> GeminiFlash[Gemini Flash]
+
+    Router --> GroqLlama[Groq Llama]
+
+    Router --> GroqQwen[Groq Qwen]
+
+    GeminiFlash --> Response[Optimized Response]
+
+    GroqLlama --> Response
+
+    GroqQwen --> Response
 ```
 
-Create a `.env` file in the `backend` directory with the following variables:
+### Benefits
 
-```env
-PORT=4000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-GEMINI_API_KEY=your_gemini_api_key
-```
+* Faster Response Times
+* Free-Tier Optimization
+* Automatic Failover
+* Better Reliability
+* Reduced Downtime
 
-> **Note**: The current codebase may use a hardcoded MongoDB connection in `config/db.js`. For security, please make sure to update `backend/config/db.js` to use `process.env.MONGO_URI`.
+---
 
-Start the backend server:
+# 🛠️ Tech Stack
 
-```bash
-npm start
-# or for development with nodemon
-npm run dev
-```
+## Frontend
 
-The server should be running on `http://localhost:4000`.
+* React 19
+* Vite
+* Tailwind CSS
+* React Router
+* Axios
+* Framer Motion
 
-### 3. Frontend Setup
-Navigate to the frontend directory and install dependencies:
+## Backend
 
-```bash
-cd ../frontend
-npm install
-```
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT Authentication
+* Multer
 
-Create a `.env` file in the `frontend` directory (optional if using defaults):
+## AI Layer
 
-```env
-VITE_API_BASE_URL=http://localhost:4000
-```
+* Google Gemini
+* Groq
+* AI Routing Engine
 
-Start the frontend development server:
+## Resume Processing
 
-```bash
-npm run dev
-```
+* PDF Parsing
+* DOCX Parsing
+* Resume Analysis Engine
 
-Access the application at `http://localhost:5173`.
+---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
-```
-Resume-builder/
-├── backend/                # Node.js/Express Backend
-│   ├── config/             # Database configuration
-│   ├── controllers/        # Route logic (Auth, AI, Resume)
-│   ├── middleware/         # Auth & Error handling middleware
-│   ├── models/             # Mongoose models (User, Resume)
-│   ├── routes/             # API routes
-│   └── server.js           # Entry point
+```text
+ResumeRocket
 │
-├── frontend/               # React Frontend
-│   ├── src/
-│   │   ├── components/     # UI Components
-│   │   ├── pages/          # Application Pages
-│   │   ├── utils/          # Helper functions & API paths
-│   │   ├── App.jsx         # Main Component
-│   │   └── main.jsx        # Entry point
-│   ├── index.css           # Tailwind imports
-│   └── vite.config.js      # Vite configuration
+├── frontend
+│   ├── src
+│   │   ├── components
+│   │   ├── pages
+│   │   ├── context
+│   │   ├── services
+│   │   └── templates
+│   │
+│   └── public
+│
+├── backend
+│   ├── controllers
+│   ├── routes
+│   ├── services
+│   ├── middleware
+│   ├── models
+│   └── config
+│
+├── docs
 │
 └── README.md
 ```
 
-## 🤝 Contributing
+---
 
-Contributions are welcome! Please fork the repository and create a pull request with your changes.
+# 🔐 Authentication Flow
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+```mermaid
+sequenceDiagram
 
-## 📄 License
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
 
-This project is licensed under the ISC License.
+    User->>Frontend: Login/Register
+
+    Frontend->>Backend: Authentication Request
+
+    Backend->>Database: Validate User
+
+    Database-->>Backend: Result
+
+    Backend-->>Frontend: JWT Token
+
+    Frontend-->>User: Access Granted
+```
+
+---
+
+# 🚀 Getting Started
+
+## Clone Repository
+
+```bash
+git clone https://github.com/Sanat1427/ResumeBuilder.git
+
+cd ResumeBuilder
+```
+
+---
+
+## Backend Setup
+
+```bash
+cd backend
+
+npm install
+
+npm run dev
+```
+
+Create a `.env` file:
+
+```env
+PORT=4000
+
+MONGO_URI=YOUR_MONGODB_URI
+
+JWT_SECRET=YOUR_SECRET
+
+GEMINI_API_KEY=YOUR_GEMINI_KEY
+
+GROQ_API_KEY=YOUR_GROQ_KEY
+```
+
+---
+
+## Frontend Setup
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+Create `.env`:
+
+```env
+VITE_API_URL=http://localhost:4000
+```
+
+---
+
+# 📦 Core Modules
+
+## Authentication
+
+* User Registration
+* Login
+* JWT Authorization
+
+## Resume Management
+
+* Create Resume
+* Update Resume
+* Delete Resume
+* Export Resume
+
+## AI Services
+
+* Summary Generation
+* Experience Generation
+* Project Generation
+* Resume Review
+* ATS Analysis
+* JD Matching
+
+## Resume Import
+
+* PDF Resume Parsing
+* DOCX Resume Parsing
+
+---
+
+# 🎨 Resume Templates
+
+Supported Templates:
+
+* Modern Professional
+* ATS Friendly
+* Minimal Design
+* Placement Focused Layouts
+
+Each template supports:
+
+* PDF Export
+* Theme Switching
+* Live Preview
+* Real-Time Updates
+
+---
+
+# 📈 Future Roadmap
+
+* AI Cover Letter Generator
+* Interview Preparation Assistant
+* Mock Interview Simulator
+* LinkedIn Profile Optimizer
+* Portfolio Generator
+* Recruiter Dashboard
+* Resume Benchmarking
+
+---
+
+# 🏆 Learning Outcomes
+
+This project demonstrates:
+
+* Full Stack Development
+* System Design
+* AI Integration
+* Authentication & Security
+* Database Design
+* Resume Parsing
+* ATS Optimization
+* Production Deployment
+* Scalable Backend Architecture
+
+---
+
+# 👨‍💻 Author
+
+### Sanat Kishore
+
+B.Tech Computer Science & Engineering (AI/ML)
+
+BIT Mesra
+
+GitHub: https://github.com/Sanat1427
+
+LinkedIn: Add Your LinkedIn URL
+
+---
+
+## ⭐ Support
+
+If you found this project useful, consider giving it a star on GitHub.
+
+It helps others discover the project and motivates further development.
